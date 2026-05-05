@@ -26,7 +26,7 @@
       document.body.innerHTML = "<p>No link ID provided.</p>";
     } else {
       // Adjust this path to where lookup.json lives in your repo
-      fetch("/lookup.json")
+      fetch("/URL_redirect/lookup.json")
         .then(res => res.json())
         .then(lookup => {
           const url = lookup[id];
