@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Redirecting...</title>
+</head>
+<body>
+  <p>Redirecting...</p>
+  <script>
+    // Grab the short ID from the URL
+    // Supports both:
+    //   /r/?id=abc1234
+    //   /r/abc1234  (if using hash: /r/#abc1234)
+    const params = new URLSearchParams(window.location.search);
+    let id = params.get("id") || window.location.hash.replace("#", "").trim();
+
+    // Also support path-based: /r/abc1234 via 404 redirect trick
+    if (!id) {
+      const parts = window.location.pathname.split("/").filter(Boolean);
+      id = parts[parts.length - 1];
+      // Ignore if it's just "r" (the folder itself)
+      if (id === "r") id = "";
+    }
+
+    if (!id) {
+      document.body.innerHTML = "<p>No link ID provided.</p>";
+    } else {
+      // Adjust this path to where lookup.json lives in your repo
+      fetch("/lookup.json")
+        .then(res => res.json())
+        .then(lookup => {
+          const url = lookup[id];
+          if (url) {
+            window.location.href = url;
+          } else {
+            document.body.innerHTML = "<p>Link not found.</p>";
+          }
+        })
+        .catch(() => {
+          document.body.innerHTML = "<p>Could not load redirect table.</p>";
+        });
+    }
+  </script>
+</body>
+</html>
